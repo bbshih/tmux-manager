@@ -1,0 +1,16 @@
+# Local configuration overrides
+config.local.sh
+
+# Backup files
+*.backup
+*.bak
+
+# macOS
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
