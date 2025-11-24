@@ -1,0 +1,95 @@
+#!/bin/bash
+# Tmux Manager - Universal session manager
+# Usage: tm [command] [args]
+
+MANAGER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPT_DIR="$MANAGER_DIR/scripts"
+SESSION_DIR="$MANAGER_DIR/sessions"
+
+# Load config
+if [ -f "$MANAGER_DIR/config.sh" ]; then
+    source "$MANAGER_DIR/config.sh"
+fi
+
+CMD=$1
+ARG=$2
+
+case "$CMD" in
+    hub|h)
+        "$SCRIPT_DIR/tmux-hub.sh"
+        ;;
+    seacal|sc|s)
+        "$SESSION_DIR/seacalendar.sh"
+        ;;
+    wishlist|wl|w)
+        "$SESSION_DIR/wishlist.sh"
+        ;;
+    claude|c)
+        NUM=${ARG:-1}
+        "$SESSION_DIR/claude.sh" "$NUM"
+        ;;
+    start-all|start|init)
+        "$SCRIPT_DIR/tmux-launch-all.sh"
+        ;;
+    list|ls|l)
+        echo "Active tmux sessions:"
+        tmux list-sessions 2>/dev/null || echo "No sessions running"
+        echo ""
+        echo "Available sessions:"
+        echo "  hub       - Control center"
+        echo "  seacal    - SeaCalendar dev"
+        echo "  wishlist  - Wishlist dev"
+        echo "  claude N  - Claude Code #N (1-${MAX_CLAUDE_SESSIONS:-4})"
+        ;;
+    kill|k)
+        if [ -z "$ARG" ]; then
+            echo "Usage: tm kill [session-name|all]"
+            exit 1
+        fi
+        if [ "$ARG" = "all" ]; then
+            tmux kill-server
+            echo "All sessions killed"
+        else
+            tmux kill-session -t "$ARG"
+            echo "Session '$ARG' killed"
+        fi
+        ;;
+    help|--help|-h|"")
+        cat << "EOF"
+╔═══════════════════════════════════════════════════════════╗
+║            TM - Tmux Session Manager                      ║
+╠═══════════════════════════════════════════════════════════╣
+║                                                           ║
+║  QUICK START:                                            ║
+║    tm start     - Launch all sessions at once            ║
+║                                                           ║
+║  LAUNCH SESSIONS:                                        ║
+║    tm hub       (or: tm h)  - Control center             ║
+║    tm seacal    (or: tm s)  - SeaCalendar dev            ║
+║    tm wishlist  (or: tm w)  - Wishlist dev               ║
+║    tm claude N  (or: tm c N) - Claude session (1-4)      ║
+║                                                           ║
+║  MANAGE:                                                 ║
+║    tm list      (or: tm l)  - List active sessions       ║
+║    tm kill NAME (or: tm k)  - Kill session               ║
+║    tm kill all              - Kill all sessions          ║
+║                                                           ║
+║  INSIDE TMUX:                                            ║
+║    Ctrl+A then D - Detach (session keeps running)        ║
+║    Ctrl+A then 0-4 - Jump to session (0=hub, 1=seacal)  ║
+║    Alt+1 to Alt+5 - Switch windows (no prefix)           ║
+║                                                           ║
+║  RECOMMENDED WORKFLOW:                                   ║
+║    1. tm start         # Launch all sessions             ║
+║    2. tm hub           # Attach to control center        ║
+║    3. Ctrl+A then 0-4  # Quick switch between sessions   ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+EOF
+        ;;
+    *)
+        echo "Unknown command: $CMD"
+        echo "Run 'tm help' for usage"
+        exit 1
+        ;;
+esac
