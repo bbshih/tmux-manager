@@ -13,11 +13,11 @@ cd "$PROJECT_DIR"
 
 tmux new-session -d -s $SESSION -n backend
 tmux send-keys -t $SESSION:0 "cd $PROJECT_DIR/backend" C-m
-tmux send-keys -t $SESSION:0 'clear && echo "Starting backend..." && sleep 2 && npm run dev' C-m
+tmux send-keys -t $SESSION:0 'clear && echo "=== Backend ===" && echo "" && echo "Start dev server: npm run dev" && echo "Build: npm run build" && echo ""' C-m
 
 tmux new-window -t $SESSION:1 -n frontend
 tmux send-keys -t $SESSION:1 "cd $PROJECT_DIR/frontend" C-m
-tmux send-keys -t $SESSION:1 'clear && echo "Starting frontend..." && sleep 2 && npm run dev' C-m
+tmux send-keys -t $SESSION:1 'clear && echo "=== Frontend ===" && echo "" && echo "Start dev server: npm run dev" && echo "Build: npm run build" && echo ""' C-m
 
 tmux new-window -t $SESSION:2 -n database
 tmux send-keys -t $SESSION:2 "cd $PROJECT_DIR" C-m

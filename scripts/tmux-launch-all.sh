@@ -26,7 +26,8 @@ start_detached() {
     else
         echo "  ▶  Starting $name..."
         TMUX= "$script" &>/dev/null &
-        sleep 2
+        # Reduced sleep from 2s to 0.5s for faster startup
+        sleep 0.5
         if tmux has-session -t "$name" 2>/dev/null; then
             echo "  ✓  $name ready"
         else

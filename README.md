@@ -61,8 +61,42 @@ export PROJECT_MYAPP="/path/to/myapp"
 
 # Session settings
 export MAX_CLAUDE_SESSIONS=4
+
+# Hub monitoring (disabled by default for VPS efficiency)
+# Enable these ONLY if you need continuous monitoring
+# WARNING: htop and docker watch consume CPU/memory constantly
+export HUB_SHOW_HTOP=false   # Set to true to auto-run htop
+export HUB_SHOW_DOCKER=false # Set to true to auto-watch docker ps
+```
+
+### Performance Tips for VPS
+
+**This setup is optimized for low resource usage:**
+- Dev servers (`npm run dev`) do NOT auto-start - run them manually when needed
+- Monitoring tools (htop, docker watch) are disabled by default
+- Tmux scrollback reduced from 50k to 10k lines (saves ~8MB per pane)
+- Status bar refreshes every 15s instead of 5s
+- Session launch optimized for speed
+
+**To enable continuous monitoring:**
+```bash
+# Edit config.sh and set:
 export HUB_SHOW_HTOP=true
 export HUB_SHOW_DOCKER=true
+
+# Then restart hub:
+tm kill hub
+tm hub
+```
+
+**On-demand monitoring (recommended):**
+```bash
+# Check resources when needed:
+htop                 # CPU/memory
+docker ps            # Containers
+docker stats         # Container resources
+free -h              # Memory details
+df -h                # Disk usage
 ```
 
 ## Commands

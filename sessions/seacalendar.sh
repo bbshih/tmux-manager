@@ -12,8 +12,7 @@ fi
 cd "$PROJECT_DIR"
 
 tmux new-session -d -s $SESSION -n services
-tmux send-keys -t $SESSION:0 'clear && echo "Starting SeaCalendar services..." && sleep 2' C-m
-tmux send-keys -t $SESSION:0 'npm run dev' C-m
+tmux send-keys -t $SESSION:0 'clear && echo "=== SeaCalendar Services ===" && echo "" && echo "Start dev server: npm run dev" && echo "Build: npm run build" && echo "Test: npm test" && echo ""' C-m
 
 tmux new-window -t $SESSION:1 -n database
 tmux split-window -v -t $SESSION:1

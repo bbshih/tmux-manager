@@ -63,21 +63,30 @@ tmux send-keys -t $SESSION:1.0 'echo "=== SEACALENDAR ===" && git status -sb && 
 tmux send-keys -t $SESSION:1.1 "cd $WISHLIST_DIR" C-m
 tmux send-keys -t $SESSION:1.1 'echo "=== WISHLIST ===" && git status -sb && echo && echo "Recent commits:" && git log --oneline -5' C-m
 
-if [ "${HUB_SHOW_HTOP:-true}" = "true" ] || [ "${HUB_SHOW_DOCKER:-true}" = "true" ]; then
+# Only create monitor window if explicitly enabled (saves CPU/memory)
+if [ "${HUB_SHOW_HTOP:-false}" = "true" ] || [ "${HUB_SHOW_DOCKER:-false}" = "true" ]; then
     tmux new-window -t $SESSION:2 -n monitor
     tmux split-window -v -t $SESSION:2
 
-    if [ "${HUB_SHOW_HTOP:-true}" = "true" ]; then
+    if [ "${HUB_SHOW_HTOP:-false}" = "true" ]; then
         tmux send-keys -t $SESSION:2.0 'htop' C-m
+    else
+        tmux send-keys -t $SESSION:2.0 'echo "On-demand monitoring commands:" && echo "" && echo "  htop              # CPU/memory usage" && echo "  free -h           # Memory details" && echo "  df -h             # Disk usage" && echo "  top -b -n 1       # Quick snapshot" && echo ""' C-m
     fi
 
-    if [ "${HUB_SHOW_DOCKER:-true}" = "true" ]; then
-        tmux send-keys -t $SESSION:2.1 'watch -n 3 "docker ps --format \"table {{.Names}}\t{{.Status}}\t{{.Ports}}\" 2>/dev/null || echo \"No containers running\""' C-m
+    if [ "${HUB_SHOW_DOCKER:-false}" = "true" ]; then
+        tmux send-keys -t $SESSION:2.1 'watch -n 5 "docker ps --format \"table {{.Names}}\t{{.Status}}\t{{.Ports}}\" 2>/dev/null || echo \"No containers running\""' C-m
+    else
+        tmux send-keys -t $SESSION:2.1 'echo "Docker commands:" && echo "" && echo "  docker ps         # Running containers" && echo "  docker stats      # Resource usage" && echo "  docker logs NAME  # Container logs" && echo ""' C-m
     fi
+
+    tmux new-window -t $SESSION:3 -n term
+    tmux send-keys -t $SESSION:3 "cd $SEACAL_DIR" C-m
+else
+    # Lightweight mode: skip monitor window entirely
+    tmux new-window -t $SESSION:2 -n term
+    tmux send-keys -t $SESSION:2 "cd $SEACAL_DIR" C-m
 fi
-
-tmux new-window -t $SESSION:3 -n term
-tmux send-keys -t $SESSION:3 "cd $SEACAL_DIR" C-m
 
 tmux select-window -t $SESSION:0
 tmux attach -t $SESSION
