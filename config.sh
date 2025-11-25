@@ -12,6 +12,7 @@ export PROJECT_WISHLIST="/opt/wishlist"
 # Session configuration
 export MAX_CLAUDE_SESSIONS=4
 
-# Hub configuration
-export HUB_SHOW_HTOP=true
-export HUB_SHOW_DOCKER=true
+# Hub configuration (disabled by default for better VPS performance)
+# Set to true to enable resource monitoring (increases CPU/memory usage)
+export HUB_SHOW_HTOP=false
+export HUB_SHOW_DOCKER=false
